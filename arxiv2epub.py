@@ -21,10 +21,6 @@ Python 3
 -Donald E. Knuth
 """
 
-from os import getenv
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # ----------------------------- logging --------------------------
 import logging
@@ -86,26 +82,27 @@ def download_latex_from_arxiv(arxiv_url, output_dir="downloads"):
 
 def unzip_latex_file(file_path, output_dir="unzipped"):
     """
-    Unzips a .tar.gz file using the Windows tar command.
+    Unzips a .tar.gz file into a folder named after the paper ID.
 
     Args:
         file_path (str): Path to the .tar.gz file.
-        output_dir (str): Directory to extract the contents.
+        output_dir (str): Base directory to extract the contents.
 
     Returns:
         str: Path to the directory containing the extracted files.
     """
-    os.makedirs(output_dir, exist_ok=True)
-    logging.info(f"Unzipping {file_path} to {output_dir}...")
+    paper_id = os.path.basename(file_path).replace(".tar.gz", "")
+    paper_dir = os.path.join(output_dir, paper_id)
+    os.makedirs(paper_dir, exist_ok=True)
+    logging.info(f"Unzipping {file_path} to {paper_dir}...")
 
     try:
         subprocess.run(
-            ["tar", "-xzf", file_path, "-C", output_dir],
+            ["tar", "-xzf", file_path, "-C", paper_dir],
             check=True,
-            shell=True,
         )
-        logging.info(f"Unzipped files to {output_dir}")
-        return output_dir
+        logging.info(f"Unzipped files to {paper_dir}")
+        return paper_dir
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to unzip file: {e}")
         raise Exception(f"Error unzipping file: {file_path}")
@@ -158,13 +155,14 @@ def main(args):
     output_file = (
         args["--output"] if args["--output"] else "output.epub"
     )  # Ensure default value
-    try:
-        latex_file = download_latex_from_arxiv(arxiv_url)
-        extracted_dir = unzip_latex_file(latex_file)
-        epub_file = compile_latex_to_epub(extracted_dir, output_file)
-        logging.info(f"EPUB file successfully created: {epub_file}")
-    except Exception as e:
-        logging.error(f"Error: {e}")
+    # try:
+    
+    latex_file = download_latex_from_arxiv(arxiv_url)
+    extracted_dir = unzip_latex_file(latex_file)
+        # epub_file = compile_latex_to_epub(extracted_dir, output_file)
+        # logging.info(f"EPUB file successfully created: {epub_file}")
+    # except Exception as e:
+    #     logging.error(f"Error: {e}")
 
 
 if __name__ == "__main__":
