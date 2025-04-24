@@ -1,0 +1,1100 @@
+%%%%%%%% ICML 2025 LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+% Recommended, but optional, packages for figures and better typesetting:
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{graphicx}
+% \usepackage{subfigure} I can't remember why this is commented
+\usepackage{booktabs} % for professional tables
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2025} with \usepackage[nohyperref]{icml2025} above.
+\usepackage{hyperref}
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Use the following line for the initial blind version submitted for review:
+% \usepackage{icml2025}
+
+% If accepted, instead use the following line for the camera-ready submission:
+\usepackage[accepted]{icml2025}
+
+% For theorems and such
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{graphicx}
+
+
+% For theorems and such
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{tabularx}       % tabularx environment
+\usepackage{makecell}
+\usepackage{amsmath,amsfonts}
+\usepackage{bm}
+% \usepackage{todonotes}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{caption}
+
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{SAEBench: A Comprehensive Benchmark for Sparse Autoencoders in Language Model Interpretability}
+
+\begin{document}
+
+\twocolumn[
+\icmltitle{SAEBench: A Comprehensive Benchmark for Sparse Autoencoders\newline
+in Language Model Interpretability}
+
+% Author list with affiliations and equal contribution markers
+\icmlsetsymbol{equal}{*}
+
+\begin{icmlauthorlist}
+\icmlauthor{Adam Karvonen}{equal,aff1}
+\icmlauthor{Can Rager}{equal,aff1}
+\icmlauthor{Johnny Lin}{equal,aff2}
+\icmlauthor{Curt Tigges}{equal,aff2}
+\icmlauthor{Joseph Bloom}{equal,aff2}
+\icmlauthor{David Chanin}{aff7}
+\icmlauthor{Yeu-Tong Lau}{aff1}
+\icmlauthor{Eoin Farrell}{aff1}
+\icmlauthor{Callum McDougall}{}
+\icmlauthor{Kola Ayonrinde}{}
+\icmlauthor{Matthew Wearden}{aff6}
+\\
+\icmlauthor{Arthur Conmy}{}
+\icmlauthor{Samuel Marks}{aff3}
+\icmlauthor{Neel Nanda}{}
+\end{icmlauthorlist}
+
+\icmlaffiliation{aff1}{Independent}
+\icmlaffiliation{aff2}{Decode Research}
+\icmlaffiliation{aff3}{Anthropic}
+% \icmlaffiliation{aff4}{UK AI Security Institute}
+% \icmlaffiliation{aff5}{}
+\icmlaffiliation{aff6}{MATS Research}
+\icmlaffiliation{aff7}{University College London}
+
+\icmlcorrespondingauthor{Adam Karvonen}{adam.karvonen@gmail.com}
+\icmlcorrespondingauthor{Can Rager}{can.rager@gmail.com}
+
+% Provide keywords for ICML
+\icmlkeywords{Sparse Autoencoders, Machine Learning, Benchmark, ICML}
+
+\vskip 0.3in
+]
+
+\printAffiliationsAndNotice{\icmlEqualContribution} % Use standard text for equal contributions
+
+
+% \begin{abstract}
+% Sparse autoencoders (SAEs) have shown promise for neural network interpretability, but the field lacks comprehensive evaluation metrics. SAEBench is a unified evaluation suite consolidating existing literature with novel methods, ranging from unsupervised metrics to practical tasks. By standardizing evaluation methods and facilitating comparison, SAEBench aims to accelerate progress in neural network interpretability research.\footnote{Code available at [insert anonymized codebase].} Additionally, the platform serves as a guiding resource for selecting pre-trained SAEs. We evaluate over 200 SAEs of varying sparsity, dictionary size, architecture, and training time and find that hierarchical architectures, such as Matryoshka SAEs, outperform existing architectures in downstream tasks. Browse the full evaluation in an interactive web-interface: \url{https://www.saebench.xyz/}.
+% \end{abstract}
+
+% NOTE: We have two abstract versions and seek feedback which one to choose / merging.
+
+% \begin{abstract}
+% Sparse autoencoders (SAEs) have recently become a popular technique for interpreting language model activations, with many works attempting to improve their effectiveness. However, most improvements rely on proxy metrics, such as the sparsity-fidelity trade-off, whose relationship to downstream performance remains unclear. SAEBench is a comprehensive evaluation suite that measures SAE performance across seven diverse metrics, spanning feature disentanglement, interpretability, and practical applications like unlearning. To enable systematic comparison, we create and open-source a suite of over 200 SAEs trained with modern methods while controlling for other variables. Our diverse metrics reveal important nuances: improvements in proxy metrics often do not translate to better task performance. Most notably, hierarchical architectures like Matryoshka SAEs outperform other approaches by over 30\% on feature disentanglement metrics despite slightly worse reconstruction. Our quantitative evaluation also reinforces previous qualitative observations about scaling challenges: as dictionary size increases, non-hierarchical architectures show degraded performance on several metrics. However, we find that hierarchical approaches typically maintain or improve performance. While optimal sparsity varies by task, we find that moderate L0 values (50-150) offer strong performance across most metrics. SAEBench offers a standardized framework to drive progress in SAE research by uncovering nuanced trade-offs and guiding architecture design. We provide an interactive benchmark at \url{https://www.saebench.xyz/}.
+% \end{abstract}
+
+% Sparse autoencoders (SAEs) have recently become a popular technique for interpreting language model activations, with extensive work attempting to improve their effectiveness. However, most improvements focus on proxy metrics whose relationship to downstream performance remains unclear. SAEBench is a comprehensive evaluation suite that measures SAE performance across seven diverse metrics, spanning feature disentanglement, interpretability, and practical applications like unlearning. To enable systematic comparison, we open-source a suite of over 200 SAEs across seven recently proposed model variants and key hyperparameters, trained under standardized conditions. Our evaluation reveals that many recent architectural improvements, while showing gains on proxy metrics, do not reliably translate to better downstream performance. Our metrics reveal important nuances: while hierarchical architectures like Matryoshka SAEs show slightly worse reconstruction, they outperform other approaches by over 30\% on feature disentanglement metrics. Our quantitative evaluation also reinforces previous qualitative observations: as dictionary size increases, most architectures show degraded performance on several metrics. However, hierarchical approaches maintain or improve performance. We use SAEBench to examine key hyperparameters lacking clear best practices - for instance, while optimal sparsity varies by task, we find that moderate L0 values (50-150) offer strong performance across most metrics. SAEBench offers a standardized framework to drive progress in SAE research by uncovering nuanced trade-offs and guiding architecture design. Our interactive interface enables researchers to flexibly visualize relationships between metrics across hundreds of open-source SAEs at https://www.saebench.xyz/.
+
+% \begin{abstract}
+%     Measuring progress of sparse autoencoders (SAEs) for neural network interpretability has largely relied on the sparsity-fidelity trade-off as a proxy. SAEBench is a comprehensive evaluation suite that directly measures interpretability, feature disentanglement, and downstream tasks across 7 metrics. Our evaluation of over 200 SAEs reveals that the sparsity-fidelity frontier is not a reliable indicator for task performance. Most notably, hierarchical architectures like Matryoshka SAEs \cite{bussmann2024matryoshka} outperform other techniques by over 30\% on feature disentanglement metrics despite worse reconstruction. Task performance increases at scale for hierarchical architectures but decreases for non-hierarchical methods. Although optimal sparsity varies by task, we find that L0 values between 80 and 160 offer strong performance across most metrics. SAEBench is a standardized evaluation framework, designed for easy extension with additional metrics. We provide an interactive benchmark at \url{https://www.saebench.xyz/}.  
+% \end{abstract} 
+
+% \textit{Note: Here's a similar, more detailed abstract draft.}
+
+% Adam's recent draft
+% \begin{abstract}
+% Sparse autoencoders (SAEs) have recently become a popular technique for interpreting language model activations, with extensive work attempting to improve their effectiveness. However, most prior work evaluates progress in training better SAEs using unsupervised proxy metrics whose relationship to downstream performance remains unclear. SAEBench is a comprehensive evaluation suite that measures SAE performance across seven diverse metrics, spanning feature disentanglement, interpretability, and practical applications like unlearning. To enable systematic comparison, we open-source a suite of over 200 SAEs across seven recently proposed SAE architectures and training algorithms. Our evaluation reveals that gains on proxy metrics do not reliably translate to better downstream performance. It also reveal important nuances: while hierarchical architectures like Matryoshka SAEs show slightly worse reconstruction, they outperform other approaches by over 30\% on feature disentanglement metrics. Our quantitative evaluation also reinforces previous qualitative observations: as dictionary size increases, most architectures show degraded performance on several metrics. However, hierarchical approaches maintain or improve performance. We use SAEBench to examine key hyperparameters lacking clear best practices - for instance, while optimal sparsity varies by task, we find that moderate L0 values (50-150) offer strong performance across most metrics. SAEBench offers a standardized framework to drive progress in SAE research by uncovering nuanced trade-offs and guiding architecture design. Our interactive interface enables researchers to flexibly visualize relationships between metrics across hundreds of open-source SAEs at \url{saebench.xyz}.
+% \end{abstract}
+
+% 01/27 Including comments from Sam, Adam and Eric
+\begin{abstract}
+    Sparse autoencoders (SAEs) are a popular technique for interpreting language model activations, and there is extensive recent work on improving SAE effectiveness. However, most prior work evaluates progress using unsupervised proxy metrics with unclear practical relevance. We introduce SAEBench, a comprehensive evaluation suite that measures SAE performance across seven diverse metrics, spanning interpretability, feature disentanglement and practical applications like unlearning. To enable systematic comparison, we open-source a suite of over 200 SAEs across eight recently proposed SAE architectures and training algorithms. Our evaluation reveals that gains on proxy metrics do not reliably translate to better practical performance.  For instance, while Matryoshka SAEs slightly underperform on existing proxy metrics, they substantially outperform other architectures on feature disentanglement metrics; moreover, this advantage grows with SAE scale. By providing a standardized framework for measuring progress in SAE development, SAEBench enables researchers to study scaling trends and make nuanced comparisons between different SAE architectures and training methodologies. Our interactive interface enables researchers to flexibly visualize relationships between metrics across hundreds of open-source SAEs at \url{saebench.xyz}. \footnote{Code and models available at: \url{github.com/adamkarvonen/SAEBench}}
+\end{abstract}
+\section{Introduction}
+How can we evaluate dictionary learning for language model interpretability? Sparse autoencoders (SAEs \cite{cunningham2023sparseautoencodershighlyinterpretable, bricken2023monosemanticity}) are a popular method for finding interpretable units in neural networks through dictionary learning. Substantial recent work has been focused on improving SAE architectures \cite{rajamanoharan2024improving, mudide2024efficient}, activation functions \cite{gao2024scaling, taggart2024prolu, rajamanoharan2024jumping, bussmann2024batchtopk, ayonrinde2024adaptivesparseallocationmutual},  and loss functions \cite{bussmann2024batchtopk, karvonen2024measuringprogressdictionarylearning, marks2024enhancingneuralnetworkinterpretability}. However, measuring the effectiveness of these methods in improving interpretability remains a core challenge. 
+
+An ideal SAE decomposes neural activations into interpretable, independently composable units that faithfully represent the internal state of a neural network. However, due to a lack of ground truth labels for language models' internal features, researchers instead train SAEs by optimizing unsupervised proxy metrics like sparsity and fidelity \cite{cunningham2023sparseautoencodershighlyinterpretable}. Maximizing reconstruction accuracy at a given level of sparsity successfully provides interpretable SAE latents, but sparsity has known problems as a proxy, such as Feature Absorption \cite{chanin2024absorption} and composition of independent latents \cite{bussmann2024metasae}. Nevertheless, most SAE improvement work merely measures whether reconstruction is improved at a given sparsity, potentially missing problems like uninterpretable high-frequency latents or increased feature absorption.
+
+% In the absence of a single, ideal metric, we argue that the best way to measure SAE quality is to give a more detailed picture with a range of diverse metrics. In particular, SAEs should be evaluated according to their performance on downstream tasks, a robust signal of usefulness.
+In the absence of a single, ideal metric, we argue that the best way to measure SAE quality is to give a more detailed picture with a range of diverse metrics. In particular, SAEs should be evaluated according to properties that practitioners actually care about.
+%In line with \cite{bricken2023monosemanticity}, w
+We characterize SAEs by concept detection, interpretability, feature disentanglement and reconstruction. Covering all aspects, SAEBench enables measuring progress with new training approaches, tuning training hyperparameters, and selecting the best SAE for a particular task. 
+%To showcase this, we trained a custom suite of over 200 SAEs of independently varying dictionary size, sparsity, and architecture. Our evaluation reveals nuanced trade-offs across multiple dimensions, including width, sparsity, and architecture, and the best SAE varies depending on the specifics of the downstream task. Given these trade-offs, we cannot combine the results into a single number without obscuring tradeoffs. Instead, we provide a range of quantitative metrics so that researchers can measure the nuanced effects of experimental changes.
+
+% \textcolor{red}{@David should we highlight here that two of these eight methods are introduced in this paper? Would this novelty help us in peer-review? If not, we can leave as is for conciseness.}
+% Our main contributions are:
+% \begin{enumerate}[itemsep=2pt,topsep=0pt]
+%     \item A standardized suite of eight evaluations capturing different aspects of SAE quality
+%     \item Two novel metrics for feature disentanglement
+%     \item Training and evaluation of over 200 SAEs revealing architectural differences, scaling trends, and training dynamics invisible to traditional metrics
+%     % \item Demonstration that Matryoshka SAEs outperform on disentanglement despite worse reconstruction.
+%     \item Demonstrating that Matryoshka SAEs outperform on feature disentanglement and concept detection, despite appearing worse on existing proxy metrics
+% \end{enumerate}
+
+Our main contributions are:
+\begin{enumerate}%[itemsep=2pt,topsep=0pt]
+    \item SAEBench: a standardized suite of eight evaluations capturing different aspects of SAE quality, including two novel metrics for feature disentanglement
+    \item Training and SAEBench evaluation of over 200 SAEs with varying architectures, training methodologies, and widths.
+    \item A nuanced analysis of the evaluations from (2), with implications for SAE architecture choice, scaling trends, and training dynamics. Many of these trends are invisible to traditional SAE evaluation metrics. For instance, we find that Matryoshka SAEs perform well on feature disentanglement and concept detection metrics, despite appearing worse on existing proxy metrics.
+\end{enumerate}
+
+
+% Our main contributions are:
+% \begin{enumerate}[noitemsep,topsep=0pt]
+%     \item Developing two novel SAE metrics \textit{Spurious Correlation Removal} and \textit{Targeted Probe Perturbation}
+%     \item Creating a central evaluation platform unifying our metrics with six existing methods.
+%     \item Training and evaluating over 200 SAEs with systematically varied architectures, widths, and sparsities, accessible through an interactive interface.
+%     \item Provide insights into SAE design using our empirical results
+% \end{enumerate}
+
+% An interactive interface for exploring our results can be found at \url{saebench.xyz}.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\columnwidth]{images/saebench_vertical.png}
+%     \caption{SAEBench evaluates sparse autoencoders across four fundamental capabilities. \textbf{Concept Detection} measures how well individual latents map to meaningful concepts. \textbf{Interpretability} evaluates feature comprehensibility using automated LLM evaluation. \textbf{Reconstruction} quantifies how faithfully the SAE preserves model behavior. \textbf{Feature Disentanglement} evaluates whether independent concepts are properly separated. These capabilities provide a comprehensive view of SAE performance beyond traditional metrics.}
+%     \label{fig:enter-label}
+% \end{figure}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.85\linewidth]{images/saebench_horizontal.png}
+    \caption{
+    SAEBench evaluates sparse autoencoders across four fundamental capabilities. \textbf{Concept Detection} measures how well individual latents map to meaningful concepts. \textbf{Interpretability} evaluates feature comprehensibility using automated LLM evaluation. \textbf{Reconstruction} quantifies how faithfully the SAE preserves model behavior. \textbf{Feature Disentanglement} evaluates whether independent concepts are properly separated. These capabilities provide a comprehensive view of SAE performance beyond traditional metrics.
+}
+
+    \label{fig:figure_1}
+\end{figure*}
+
+\section{Related work}
+
+\subsection{SAEs for Interpretability}
+Sparse autoencoders (SAEs) emerged as an unsupervised tool for decomposing LLM activations into sparse linear combinations of learned feature directions that are often interpretable \cite{cunningham2023sparseautoencodershighlyinterpretable, bricken2023monosemanticity}. In its basic form, an SAE consists of an encoder that maps model internal activations $x$ to a sparse, higher-dimensional feature space and a decoder that reconstructs the input activations as $\hat{x}$. The standard architecture uses a linear encoder followed by a ReLU activation and a linear decoder, trained to minimize both reconstruction error and a $L_1$ sparsity penalty while maintaining normalized decoder columns. The forward pass and optimization objective can be formalized as:
+\begin{align}
+h &= \text{ReLU}(W_E x + b_E) \\
+\hat{x} &= W_D h + b_D \\
+\mathcal{L} &= \underbrace{\|x - \hat{x}\|_2^2}_{\text{reconstruction}} + \lambda \underbrace{\|h\|_1}_{\text{sparsity}}
+\end{align}
+
+% subject to the constraint:
+% \begin{equation}
+% \|w_j\|_2 = 1 \quad \forall j
+% \end{equation}
+
+where $x$ represents the input activation, $h$ is the sparse hidden representation, $\hat{x}$ is the reconstructed activation, $W_E, b_E$ are the encoder weights and biases, $W_D, b_D$ are the decoder weights and biases, $w_j$ represents the $j$-th column of $W_D$, and $\lambda$ is the sparsity coefficient.
+
+
+
+
+Recent work has proposed numerous improvements to the original ReLU SAE design. These innovations span multiple aspects:
+\begin{itemize}
+\item \textbf{Network structure:} Gated SAE \cite{rajamanoharan2024improving}, Switch SAE \cite{mudide2024efficient}
+\item \textbf{Activation function:} TopK SAE \cite{gao2024scaling}, BatchTopK SAE \cite{bussmann2024batchtopk}, JumpReLU SAE \cite{rajamanoharan2024jumping}, ProLU SAE \cite{taggart2024prolu}, Feature Choice SAE \cite{ayonrinde2024adaptivesparseallocationmutual}
+\item \textbf{Loss function:} P-anneal SAE \cite{karvonen2024measuringprogressdictionarylearning}, Matryoshka SAE \cite{bussmann2024matryoshka}, Feature-Aligned SAE \cite{marks2024enhancingneuralnetworkinterpretability}.
+\end{itemize}
+
+Most of these improvements were guided by optimizing the sparsity-fidelity tradeoff—maximizing reconstruction quality at a given level of sparsity. However, this unsupervised metric may not directly correspond to desirable traits such as interpretability. For instance, an infinite-width SAE with an $L_0$ norm of 1 could theoretically achieve perfect reconstruction while failing to provide meaningful insights into the model's representations.
+
+\subsection{SAE Evaluations}
+Previous evaluation approaches have largely focused on specific aspects of SAE performance (see Appendix \ref{app:related_work} for detailed discussion). Automated interpretability using language models has been widely adopted \cite{paulo2024automaticallyinterpretingmillionsfeatures, rajamanoharan2024jumping}, though it often struggles to differentiate between architectures \cite{circuits2024august}. Other evaluation methods include sparse probing of labeled concepts \cite{gao2024scaling}, evaluation on board games with ground truth features \cite{karvonen2024measuringprogressdictionarylearning}, and supervised dictionary comparison \cite{makelov2024principledevaluationssparseautoencoders, venhoff2024sagescalablegroundtruth}.
+
+While these existing benchmarks can provide valuable insights, they each focus on specific aspects of SAE performance. This limited evaluation scope has led many researchers to default to optimizing the sparsity-fidelity trade-off, despite its known limitations.
+
+\section{SAEBench: A Comprehensive Benchmark}
+
+SAEBench addresses these challenges by providing a unified evaluation framework that captures multiple aspects of SAE performance while remaining computationally tractable and easy to use. We identified five key requirements for a comprehensive SAE evaluation framework:
+
+\textbf{Diversity}. Metrics should capture a broad range of SAE behavior—from basic reconstruction to downstream task performance—since relying on a single metric can overlook important tradeoffs. 
+\textbf{Extensibility}. The framework should offer a standardized structure, making it easy to add new evaluation methods as the field evolves. 
+\textbf{Speed}. Evaluations must complete within one to two hours per SAE, facilitating rapid research iteration. 
+\textbf{Automation}. A single script should run all evaluations, eliminating the need to integrate separate codebases manually. 
+\textbf{Reproducibility}. All metrics must be deterministic and reproducible to ensure fair comparisons between architectures.
+
+\subsection{Metrics}
+Effective sparse autoencoders should excel across multiple dimensions: they should capture meaningful individual concepts, produce human-interpretable latents, faithfully reconstruct activations, and properly separate independent concepts. However, optimizing for any single dimension can lead to undesirable trade-offs. For instance, maximizing reconstruction might come at the cost of feature interpretability, while focusing solely on concept detection could sacrifice faithful representation of the original model's behavior.
+
+We therefore organize SAEBench around four fundamental capabilities that together characterize effective SAEs:
+\begin{itemize}
+    \item \textbf{Concept Detection:} Measures how precisely individual latents correspond to meaningful concepts through Sparse Probing and Feature Absorption metrics
+    \item \textbf{Interpretability:} Evaluates human-understandability of learned latents using an LLM as a judge
+    \item \textbf{Reconstruction:} Quantifies how faithfully the SAE preserves the model's original behavior via Loss Recovered metrics
+    \item \textbf{Feature Disentanglement:} Assesses proper separation of independent concepts through Unlearning, Spurious Correlation Removal, and Targeted Probe Perturbation
+\end{itemize}
+
+These capabilities are measured through seven distinct metrics, combining established approaches with novel evaluation methods. Below we summarize each metric. Full implementation details are provided in Appendix~\ref{app:eval-details}.
+
+%(Note to Claude: Figure 1 has the following grouping: Concept Detection (Sparse Probing, Feature Absorption). Interpretability (LLM Auto-Interp). Reconstruction (Loss Recovered). Feature Disentanglement (Unlearning, Spurious Correlation Removal, Targeted Probe Perturbation).
+
+\subsection{Existing Metrics}
+
+\subsubsection{Traditional  Sparsity--Fidelity Tradeoff}
+\label{sec: core}
+
+The main training objective of sparse autoencoders is to learn sparse representations that accurately reconstruct the input. Sparsity is quantified by the $L_0$ norm and often approximated by an $L_1$ norm training objective or enforced by a TopK mask. Reconstruction (fidelity) is quantified by mean squared error or the loss recovered score, which is defined as
+\vspace{0.1cm}
+\begin{equation}
+    \frac{(H^* - H_0)}{(H_{\text{orig}} - H_0)}
+\end{equation}
+\vspace{0.1cm}
+where $H_{\text{orig}}$ represents the cross-entropy loss of the model for next-token prediction, $H^*$ denotes the cross-entropy loss when substituting the model activation $x$ with its SAE reconstruction $\hat{x}$ during the forward pass, and $H_0$ is the cross-entropy loss resulting from zero-ablating $x$.
+
+The sparsity-fidelity trade-off has dominated recent SAE development, typically appearing as the primary evaluation metric in new architectures, while results on interpretability metrics often remain inconclusive or secondary. While advances in this trade-off are valuable, small gains do not necessarily translate into qualitatively better representations or superior performance on downstream interpretability tasks. We therefore regard the sparsity-fidelity curve as necessary but not sufficient for evaluating SAEs.
+
+\subsubsection{Automated Interpretability}
+We adopt a standard LLM-based judging framework \citep{paulo2024automaticallyinterpretingmillionsfeatures}: for each selected latent, a language model first proposes a "feature description" using a range of activating examples. In the test phase, we construct a test set by sampling sequences that activate the latent across different activation strengths, along with random control sequences. The LLM judge uses the feature description it created to predict which sequences would activate the selected latent, and the accuracy of these predictions determines the final interpretability score.
+
+\subsubsection{$k$-Sparse Probing}
+
+Sparse probing evaluates whether SAEs isolates pre-specified concepts. For each concept (e.g., sentiment), we identify the $k$ most relevant latents by comparing their mean activations on positive versus negative examples and train a linear probe on top $k$ latents. If those latents align well with the concept, the probe’s accuracy will be high even though the SAE was not explicitly supervised to isolate that concept. This metric can be efficiently calculated using only the SAE and precomputed model activations.
+
+The choice of $k$ depends on the use case: For human interpretability, mapping concepts to single latents is ideal, while for understanding model representations, research suggests concepts can be distributed across multiple latents \cite{engels2024languagemodelfeatureslinear}. We evaluate across $k \in \{1,2,5\}$ latents but focus our analysis on $k=1$. Our methodology is based on \citet{gurnee2023findingneuronshaystackcase}, who applied sparse probing to identify context-specific MLP neurons, and \citet{gao2024scaling}, who adapted sparse probing to evaluate SAEs.
+
+\subsubsection{RAVEL}
+
+If an SAE effectively captures independent concepts, each should be encoded by dedicated latents, achieving clear disentanglement. To measure this, we implement the RAVEL (Resolving Attribute–Value Entanglements in Language
+Models) evaluation from \citet{huang2024ravelevaluatinginterpretabilitymethods}, which tests how cleanly interpretability methods separate related attributes within language models. RAVEL evaluates whether targeted interventions on SAE latents can selectively change a model’s predictions for specific attributes without unintended side effects—for instance, making the model believe Paris is in Japan while preserving the knowledge that the language spoken remains French.
+
+Concretely, RAVEL works as follows: given prompts like \textit{"Paris is in the country of France," "People in Paris speak the language French,"} and \textit{"Tokyo is a city,"} we encode the tokens \textit{Paris} and \textit{Tokyo} using the SAE. We train a binary mask to transfer latent values from \textit{Tokyo} to \textit{Paris}, decode the modified latents, and insert them back into the residual stream for the model to generate completions. The final disentanglement score averages two metrics: the \textit{Cause Metric}, measuring successful attribute changes due to the intervention, and the \textit{Isolation Metric}, verifying minimal interference with other attributes.
+
+\subsection{Adapted Metrics}
+
+The following approaches were originally developed to study specific phenomena in SAEs rather than as general evaluation metrics. We adapt them into quantitative measures that can be systematically applied to any SAE. 
+
+\subsubsection{Feature Absorption}
+
+Feature absorption \cite{chanin2024absorptionstudyingfeaturesplitting} is a phenomenon where sparsity incentivizes SAEs to learn undesirable feature representations. This occurs with hierarchical concepts where A implies B (e.g., pig implies mammal, or red implies color)—rather than learning separate latents for both concepts, the SAE is incentivized to learn a latent for A and a latent for ``B except A'' to improve sparsity. Feature absorption often manifests in unpredictable ways, creating gerrymandered latents where, for instance, a ``starts with S'' feature might activate on 95\% of S-starting tokens but inexplicably fail on an arbitrary 5\% where the feature has been absorbed elsewhere. 
+
+We build on the metric proposed in \citet{chanin2024absorptionstudyingfeaturesplitting}, which examines how SAE latents represent first-letter classification tasks, identifying cases where the main latents for a letter fail to fully capture the feature while other latents compensate. Our implementation extends this approach with a more flexible measurement technique that enables evaluation across all model layers. Motivated by manual inspection revealing absorption patterns missed by the original metric, we introduce methods to detect partial absorption and cases where multiple latents share responsibility for absorption.
+
+\subsubsection{Unlearning Capability}
+In many practical applications, we want to selectively remove knowledge from a language model without disrupting unrelated capabilities. \citet{farrell2024applyingsparseautoencodersunlearn} examined the effectiveness of SAEs for unlearning by applying conditional negative steering. We identify relevant latents by comparing their activation frequencies between a forget set (biology-related text in the WMDP-bio corpus) and retain set (WikiText), then clamp these latents to negative values whenever they activate. We build on their methodology and report an unlearning score for each individual SAE, measuring unlearning success via degraded accuracy on WMDP-bio test questions while using MMLU categories to verify retained capabilities. Models that achieve strong unlearning of the target domain with minimal side effects on other domains score higher.
+
+\subsection{Novel Metrics}
+
+While existing metrics capture many aspects of SAE performance, they don't directly measure how completely and cleanly SAEs isolate concepts within small groups of latents—a property crucial for both human analysis and circuit analysis. Existing methods like unlearning and RAVEL can modify behavior through steering individual latents, even when concepts are distributed across many latents, as steering a few key latents can be sufficient to alter model behavior. Our metrics instead use zero ablation, which provides a stronger test of concept isolation: only when we've identified all latents representing a concept will zeroing them out completely remove that concept's influence.
+
+Our metrics adapt the methodology from \citet{marks2024sparsefeaturecircuitsdiscovering}, which demonstrated removing unwanted correlations from classifiers through targeted ablation of SAE $k$ latents. Both metrics evaluate two key properties through zero ablation:
+
+\begin{itemize}[itemsep=2pt,topsep=0pt]
+    \item \textbf{Completeness}: Whether a concept is fully captured by a small set of latents
+    \item \textbf{Isolation}: Whether different concepts are encoded by distinct groups of latents
+\end{itemize}
+
+\textbf{Spurious Correlation Removal (SCR)} extends the SHIFT method from \citet{marks2024sparsefeaturecircuitsdiscovering}. Starting with a biased linear probe classifier that has learned both intended signals (e.g., profession) and spurious correlations (e.g., gender), we measure how effectively zero-ablating a small number of SAE latents can remove the unwanted correlation from the SAE's output. If these latents cleanly isolate the spurious concept, removing them should significantly improve the classifier's accuracy on the intended signal.
+
+\textbf{Targeted Probe Perturbation (TPP)} generalizes this approach to multi-class settings. For each class, we train binary classification probes and identify its most relevant latents. We then measure how zero-ablating these latents affects probe accuracy across all classes. A high TPP score indicates that concepts are captured by distinct sets of latents—ablating latents relevant to one class should primarily degrade that class's probe accuracy while leaving other class probes unaffected.
+
+Both metrics can be efficiently calculated using only the SAE and precomputed model activations, bypassing the need for expensive model forward passes. We sweep over ablation set sizes $k \in \{5, 10, 20, 50, 100, 500\}$ to assess how concept completeness varies with feature count. In presenting our results, we focus on ablation sets of size 20 as a practical size for manual analysis, although we observe similar trends within the range of $k \in [5, 50]$. Full results across all ablation sizes are available in Appendix \ref{app:intervention_set_size}.
+
+\begin{figure*}[t]
+\centering
+    \includegraphics[width=0.95\textwidth]
+    {images/plot_2x3_sae_bench_gemma-2-2b_65k_architecture_series_layer_12.png}
+    \caption{Scores for the Loss Recovered, Automated Interpretability, Absorption, SCR, and Sparse Probing metrics on the 65k width Gemma-2-2B suite of SAEs.}
+    \label{fig:2x3_65k_plot}
+\end{figure*}
+
+\subsection{Practitioner's Guide}
+
+When evaluating new SAE methods, we recommend training multiple SAEs across a range of sparsities ($L_0 \in [20, 200]$) with directly comparable baselines. Many evaluations have a strong correlation with sparsity, making it essential to assess performance across multiple sparsity levels. This approach ensures that improvements are genuine rather than statistical noise. Furthermore, it verifies that advances genuinely push the Pareto frontier on target metrics, rather than merely reflecting an underlying correlation with different sparsity levels.
+
+
+\section{Results}
+
+We use SAEBench to evaluate a suite of both common and novel SAE architectures listed in Table \ref{tab:sae_types} trained using the open source library \texttt{dictionary\_learning} \cite{marks2024dictionary_learning}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|}
+\hline
+\textbf{Evaluated SAE Architectures}                                                         \\ \hline
+ReLU                         \cite{anthropic_sae_2024}                                                   \\ \hline
+MatryoshkaBatchTopK          \cite{bussmann2024matryoshka}                                               \\ \hline
+TopK                         \cite{gao2024scaling}                                                      \\ \hline
+BatchTopK                    \cite{bussmann2024batchtopk}                                               \\ \hline
+Gated                        \cite{rajamanoharan2024improving}                                          \\ \hline
+JumpReLU                     \cite{rajamanoharan2024jumping}                                            \\ \hline
+P-Annealing                  \cite{karvonen2024measuringprogressdictionarylearning}                     \\ \hline
+\end{tabular}
+\caption{List of evaluated sparse autoencoder architectures}
+\label{tab:sae_types}
+\end{table}
+
+We train multiple variants sweeping over widths (4k, 16k, and 65k latents) and sparsities ($L_0$ ranging from 20 to 1000) on residual stream activations obtained at middle layers of Gemma-2-2B (layer 12; \citet{gemmateam2024gemma2improvingopen}) and Pythia-160M (layer 8; \citet{biderman2023pythiasuiteanalyzinglarge}). We will open-source the suite of over 200 SAEs upon completion of the peer-review process. Further training details are contained in Appendix \ref{app:sae-training-details}. In addition, we evaluate SAEs of widths 16k, 65k, 131k, and 1M on Gemma-2-2B and Gemma-2-9B from the Gemma-Scope series \cite{lieberum2024gemmascopeopensparse}, with results in Appendix \ref{app:gemma_scope_eval_results}.
+
+Our key takeaways are detailed in the following paragraphs. We discuss 65k width SAEs trained on Gemma-2-2B unless noted otherwise. Similar trends exist at smaller dictionary widths, as seen in Appendix \ref{app:sae_bench_eval_results}, but we observe clearer differentiation at larger widths.
+
+We emphasize that we examine a much wider range of sparsities than the typical range of $L_0 \in [20, 200]$. Previous work identified the most interpretable SAE latents in this $L_0$ range \cite{bricken2023monosemanticity, rajamanoharan2024jumping}. We evaluate metrics across a much broader range of $L_0 \in [20, 1000]$ than typically studied to provide a more complete understanding of sparsity's role in SAE performance.% , but do not identify special trends in the higher L0 range.
+
+
+\subsection{Comparing SAE Architectures}
+
+\textbf{Matryoshka Batch TopK SAEs perform best on concept detection and feature disentanglement tasks, especially in the typical L0 range of 40-200 (5 of 8 metrics).} Most notably, the Matryoshka SAE obtains best scores on several metrics (Absorption, RAVEL, Sparse Probing, and SCR in Figure \ref{fig:2x3_65k_plot} and TPP in Figure \ref{fig:plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12}) while performing worse than TopK and BatchTopK on the sparsity-fidelity frontier (Figure \ref{fig:2x3_65k_plot}, upper left). In L0s over 200 (larger than typically used), however, Matryoshka is often not superior. We observe the recurring theme that Matryoshka shows qualitatively different results than all other architectures.
+
+\textbf{The ReLU SAE is outperformed by other methods on 5 of 8 metrics.}
+The ReLU SAE performs worst on loss recovered, agreeing with previous work \cite{circuits2024august, rajamanoharan2024improving, gao2024scaling}. We further find that all other architectures outperform the ReLU SAE on absorption, SCR, RAVEL, and TPP metrics.
+
+However, ReLU variants do outperform on one metric. 65k width ReLU SAEs with an $L_0 > 200$ (above the range of $[20, 200]$ typically examined in the literature) perform the best overall on 1-sparse probing, as seen in Figure \ref{fig:plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12}. ReLU SAEs further show comparable performance in the unlearning evaluation.
+
+\textbf{The sparsity-fidelity frontier does not reliably indicate performance on downstream tasks.}
+The sparsity-fidelity frontier shows distinct rankings across different $L_0$ regimes. In the low-$L_0$ regime ($< 100$), architectures are clearly separated, with BatchTopK performing best, followed by TopK, Jump, Gated, Matryoshka, p-anneal, and ReLU performing worst. As $L_0$ increases to the middle regime $[100, 500]$, these performance differences diminish substantially, with most architectures achieving comparable performance except for p-anneal and ReLU SAEs.
+
+However, these rankings don't consistently align with performance on other metrics. For example, the Matryoshka architecture shows strong performance on SCR and feature absorption despite its middling position on the sparsity-fidelity frontier. Similarly, while p-anneal consistently outperforms Gated SAE on the absorption metric (Figure \ref{fig:2x3_65k_plot}, lower left), Gated SAE shows superior performance on loss recovered (Figure \ref{fig:2x3_65k_plot}, upper left). These contrasting results across different metrics emphasize the importance of comprehensive evaluation using diverse metrics beyond the sparsity-fidelity trade-off.
+
+\subsection{Dictionary Size Scaling Dynamics}
+
+\textbf{Scaling behaviors are mixed across metrics.} As we scale dictionary size from 4k to 16k to 65k latents, we observe distinct patterns that shed light on the fundamental trade-offs in SAE design. Some metrics show consistent improvements with scale, as shown in Figure \ref{fig:scaling_width_single_trainer_2x3}. Both Automated Interpretability scores and Loss Recovered generally increase with dictionary size across all architectures, suggesting that larger dictionaries enable both better reconstruction and more interpretable individual latents.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/plot_2x3_sae_bench_gemma-2-2b_scaling_width_series_layer_12.png}
+    \caption{Scaling SAE width from 4k to 65k for across SAE architectures. For each architecture / width pair, we mean over all results in the $L_0$ range between 40 and 200. Most notably the hierarchical Matryoshka SAE shows positive scaling behavior. Due to varying L0 distributions across architectures, this visualization is intended primarily for analyzing scaling trends rather than architecture comparisons. Complete scaling results across all sparsity values are presented in Figure \ref{fig:2x3_width_diff_scalingplot}}
+    \label{fig:scaling_width_single_trainer_2x3}
+\end{figure*}
+
+\textbf{Matryoshka is the only architecture improving on feature disentanglement with scale.}
+We observe worse performance with scale, also called inverse scaling, for most architectures on metrics that measure feature disentanglement and concept detection. Absorption scores worsen with increased dictionary size for all architectures except Matryoshka, which shows only minor degradation. Similarly, SCR performance at a fixed intervention budget decreases for most architectures as dictionary size grows, while Matryoshka generally improves its performance (Figure \ref{fig:2x3_width_diff_scalingplot}).
+
+We hypothesize that feature splitting determines scaling behavior on disentanglement metrics. \citet{bricken2023monosemanticity} demonstrate that increasing SAE width drives feature splitting, producing more granular representations at lower levels of abstraction. \citet{bussmann2024metasae} further shows that a single decoder direction can fragment into multiple subfeatures, highlighting the risk of over-splitting. In contrast, Matryoshka SAEs employ a hierarchical design to learn multiple levels of abstraction simultaneously, avoiding such fragmentation. This hierarchical structure likely explains their positive scaling behavior on feature disentanglement metrics, whereas other architectures exhibit negative scaling trends.
+
+Another hypothesis for the inverse scaling with SCR is that SCR zero ablates a fixed number of latents, and the inverse scaling is simply due to the fact that a smaller fraction of the larger SAE is being modified. However, this inverse scaling pattern persists even when controlling for intervention size. When we examine SCR scores across a range of intervention sizes (Figure \ref{fig:scr_intervention_budget_sweep_scaling_diff}), non-hierarchical architectures still show degraded performance at larger dictionary sizes. This suggests that phenomena like feature splitting or feature absorption may be leading to poor isolation of concepts.
+
+Note that we scale with a fixed number of training steps rather than a fixed compute budget. In other words, all SAEs were trained with the same amount of training data while the number of FLOPs grows proportional to the dictionary size.
+
+\subsection{Task-Dependent Optimal Sparsity}
+\textbf{While different tasks demand different levels of sparsity, moderate $L_0$ values of 50-150 offer a reasonable compromise across metrics.}
+Finally, we examine how performance varies with respect to $L_0$ in Figure \ref{fig:plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12}.
+\begin{itemize}
+    \item Lower $L_0$ (higher sparsity) often helps human interpretability.
+    \item Higher $L_0$ yields better reconstruction fidelity, RAVEL and targeted probe perturbation scores, and reduced feature absorption.
+    \item Moderate $L_0$ sometimes balances these trade-offs or even performs best on certain metrics like sparse probing and spurious correlation removal.
+\end{itemize}
+
+In other words, no single $L_0$ is optimal for all tasks. However, a moderate $L_0 \in [50, 150]$ strikes a reasonable balance between our various metrics.
+
+\subsection{Monitoring Training}
+We evaluate checkpoints of our 16k TopK and ReLU SAEs at 0, 5M, 15M, 50M, 150M, and 500M tokens on our metrics, where 500M is the total number of training steps. We find that many metrics achieve most of their performance by 50M tokens, although there is still slow improvement, as seen in Figure \ref{fig:plot_all_checkpoints}. We caution that minor quantitative improvements may also have major qualitative improvements, and higher training budgets may be worthwhile, especially for larger dictionary sizes.
+
+\subsection{Model Scale Effects}
+
+When comparing results between Pythia-160M and Gemma-2-2B, we find that while reconstruction fidelity trends remain consistent, metrics relying on supervised concepts (SCR, TPP, sparse probing, and feature absorption) show substantially different patterns, as seen in Appendix \ref{app:sae_bench_eval_results}. The advantages of hierarchical architectures on our SCR metric seen in Gemma-2-2B don't appear in Pythia-160M. We attribute this to fundamental differences in model capabilities—our supervised metrics assume robust representation of concepts like spelling, professions, and demographics, which are likely weaker in smaller models. This raises questions about the scale-dependence of SAE evaluation metrics themselves. We therefore focus on Gemma-2-2B for our main comparisons as it better represents real-world usage.
+
+\subsection{Unexpected Findings and Limitations}
+
+Feature disentanglement metrics (TPP, RAVEL) showed an unexpected preference for higher L0 values ($> 400$), diverging significantly from the conventional L0 range of 20-200 typically used in SAE literature. This preference is particularly pronounced for TPP, while interestingly, SCR—a conceptually related metric—does not exhibit this pattern. We hypothesize that higher sparsity forces the composition of multiple concepts into fewer active latents, potentially harming disentanglement.
+
+While we do see some notable trends with K-sparse probing, it provides limited differentiation between architectures, widths, and sparsities, with scores falling within a narrow range. This aligns with previous findings from \citet{gao2024scaling}, who had observed that "Our probe based metric is quite noisy", even across 61 binary classification datasets. However, we observe that all SAEs significantly outperform a baseline of probing directly on K residual stream channels (0.65 on Layer 12 of Gemma-2-2B).
+
+Our Unlearning evaluation is constrained by model capabilities -- meaningful unlearning measurement requires strong baseline task performance, but Gemma-2-2B only achieved sufficient performance on one of the existing unlearning test sets. Future work should explore larger models with stronger task performance or develop unlearning datasets better matched to model capabilities.
+
+\section{Limitations}
+
+\textbf{Supervised metrics are fundamentally limited by the availability of ground truth data.} Our supervised metrics can only evaluate concepts with reliable ground truth data, representing a small subset of the vast space of concepts encoded in language models. While this limitation doesn't affect unsupervised metrics like automated interpretability and sparsity-fidelity, it means our supervised metrics examine only a fraction of each SAE's latents. Due to this limited number of supervised concepts, some metrics show relatively noisy results. However, several metrics---particularly spurious correlation removal and absorption---demonstrate clear and substantial differences between architectures, with hierarchical architectures outperforming other approaches by margins of 30-40\%.
+
+\textbf{Quantitative metrics may not capture qualitative aspects of interpretability.} Our benchmark does not directly capture qualitative aspects of interpretability that researchers find valuable in practice. While metrics like automated-interpretability attempt to quantify feature interpretability, they may not reflect the nuanced insights gained through manual investigation of SAE latents during mechanistic analysis.
+
+\textbf{Our evaluation covers specific models but cannot address all language model architectures and scales.} While we provide extensive evaluation across multiple architectures and dictionary sizes on Gemma-2-2B and Pythia-160M, SAE behavior may vary across different model scales, architectures, and layers. Future work could investigate how these patterns generalize across a broader range of models and network layers.
+
+\textbf{Metrics cannot be meaningfully combined into a single score.} Different downstream applications or users may prioritize different aspects of SAE performance - for example, interpretability or reconstruction accuracy. Additionally, our metrics operate on different scales and exhibit varying levels of noise. Given these complexities, any attempt to combine metrics into a single score would require arbitrary weighting choices that could obscure important trade-offs between different aspects of SAE performance.
+
+\section{Conclusion}
+SAEBench provides a comprehensive evaluation framework that moves beyond the traditional sparsity-fidelity frontier to capture multiple dimensions of SAE performance. Our results reveal several key insights about SAE design and scaling. First, while recent architectural innovations show clear improvements over the original ReLU SAE on some metrics, hierarchical architectures like Matryoshka SAEs demonstrate dramatically superior performance on feature disentanglement tasks despite slightly worse reconstruction fidelity. Second, we find that dictionary size scaling produces complex trade-offs: while larger dictionaries generally improve reconstruction and per-feature interpretability, they can lead to degraded concept isolation in non-hierarchical architectures. Third, optimal sparsity levels vary significantly by task, though moderate L0 values of 50-150 offer reasonable compromise across most metrics.
+
+
+These findings highlight the importance of comprehensive evaluation across multiple metrics when developing new SAE architectures. While the field has primarily focused on optimizing the sparsity-fidelity trade-off, our results suggest that downstream task performance and feature disentanglement are both important considerations for practical applications. By providing a standardized benchmark suite and revealing previously hidden trade-offs, SAEBench aims to accelerate progress in neural network interpretability research.
+
+Future work could extend SAEBench to evaluate SAEs across a broader range of model scales and architectures, develop additional metrics for capturing qualitative aspects of interpretability, and investigate the relationship between training dynamics and downstream performance. We invite the community to implement additional metrics in our standardized format. We hope that SAEBench will serve as a valuable resource for researchers developing new SAE architectures and practitioners selecting pre-trained SAEs for specific applications.
+
+\section*{Impact Statement}
+
+This work aims to improve the evaluation of sparse autoencoders, a key tool in mechanistic interpretability. By providing a comprehensive benchmark, we seek to help researchers develop more interpretable models, diagnose failure modes, and better understand model representations. We believe that improving interpretability is more likely to reduce potential harms from AI systems by making their behavior more transparent and predictable. However, as with any research in this space, these insights could also accelerate broader advancements in AI, which carry both benefits and risks.
+
+
+
+\section*{Acknowledgements}
+This work was conducted as part of the ML Alignment \& Theory Scholars (MATS) Program and supported by a grant from OpenPhilanthropy. The program's collaborative environment made this diverse collaboration possible. We are grateful to Alex Makelov for discussions and implementations of sparse control, to McKenna Fitzgerald for her guidance and support throughout the program, as well as to Bart Bussmann, Patrick Leask, Javier Ferrando, Oscar Obeso, Stepan Shabalin, Arnab Sen Sharma and David Bau for their valuable input. Our thanks go to the entire MATS and Lighthaven staff.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDIX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\bibliography{references}
+\bibliographystyle{icml2025}
+
+\newpage
+\appendix
+\onecolumn
+
+\section{Computational Requirements}
+
+The computational requirements for running SAEBench evaluations were measured on an NVIDIA RTX 3090 GPU using 16K width SAEs trained on the Gemma-2-2B model. Table \ref{tab:eval_timing} breaks down the timing for each evaluation type into two components: an initial setup phase and the per-SAE evaluation time. The setup phase includes operations like pre-computing model activations, training probes, or other one-time preprocessing steps that can be reused across multiple SAE evaluations. After this setup is complete, each evaluation has its own runtime per SAE tested.
+
+The total evaluation time for a single SAE across all benchmarks is approximately 65 minutes, with an initial setup time of 107 minutes. Note that actual runtimes can vary significantly based on factors like SAE dictionary size, choice of base model, and GPU selection.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+Evaluation Type & Avg Time per SAE (min) & Setup Time (min) \\ \hline
+Absorption & 26 & 33 \\ \hline
+Core & 9 & 0 \\ \hline
+SCR & 6 & 22 \\ \hline
+TPP & 2 & 5 \\ \hline
+Sparse Probing & 3 & 15 \\ \hline
+Automated Interpretability & 9 & 0 \\ \hline
+Unlearning & 10 & 33 \\ \hline
+\textbf{Total} & \textbf{65} & \textbf{107} \\ \hline
+
+\end{tabular}
+\caption{Timing results for evaluations, rounded to the nearest minute.}
+\label{tab:eval_timing}
+\end{table}
+
+
+\section{SAE Training Details}
+\label{app:sae-training-details}
+
+For each [layer, width, type] combination, we target 6 $L_0$ values: [20, 40, 80, 160, 320, 640]. For SAEs trained with a sparsity penalty, without the ability to explicitly set a desired $L_0$ (all except TopK variants), we may not exactly hit the targeted $L_0$ values. All other variables are kept fixed to enable direct comparisons. All SAEs are trained in a directly comparable manner, including identical data and data ordering.
+
+When training, we first estimate a scalar constant to normalize the activations to have a unit mean squared norm during training, increasing hyperparameter transfer between layers and models. We fold this constant into the weights after training so our SAEs don't require normalized activations.
+
+We initialize the decoder to the transpose of the encoder, but do not tie them during training. We found that the transpose initialization was important for avoiding dead latents which do not activate during training.
+
+Following \cite{neel_sae_replication}, we randomly sample from a buffer of 250,000 activations and replenish the buffer when half empty.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Hyperparameter}        & \textbf{Value}                  \\ \hline
+        Tokens processed               & 500M                            \\ \hline
+        Learning rate                  & $3 \times 10^{-4}$              \\ \hline
+        Learning rate warmup (from 0)           & 1,000 steps                     \\ \hline
+        Sparsity penalty warmup (from 0)        & 5,000 steps                     \\ \hline
+        Learning rate decay (to 0)           & Last 20\% of training           \\ \hline
+        Dataset                        & The Pile                        \\ \hline
+        Batch size                     & 2,048                           \\ \hline
+        LLM context length             & 1,024                           \\ \hline
+    \end{tabular}
+    \caption{SAE training hyperparameters.}
+    \label{tab:sae-training-hyperparameters}
+\end{table}
+
+\section{Extended Related Work}
+\label{app:related_work}
+
+
+\subsection{SAE Benchmarks}
+
+A common approach to evaluating SAE features has been automated interpretability, where language models are used to judge feature interpretability \cite{paulo2024automaticallyinterpretingmillionsfeatures, rajamanoharan2024improving}. In this evaluation, an LLM generates a natural language description of an SAE feature based on input sentences that activate the feature most. A simulator model uses the generated description to predict feature activations on held-out data. However, this evaluation method has struggled to provide statistically significant differences between various SAE architectures and approaches, such as in \citet{rajamanoharan2024improving}. The \citet{circuits2024august} found most SAE variants perform comparably, while outperforming the standard ReLU SAE.
+
+\citet{gao2024scaling} propose using the Top-K activation function to SAEs and evaluate their approach on four metrics:
+\textbf{ Downstream loss} measures the difference in Kullback-Leibler (KL) divergence and cross-entropy (CE) loss of model predictions after replacing activations with their SAE reconstruction during a forward-pass.
+\textbf{Sparse probing} quantifies the correlation of single SAE latents with labeled concepts in natural language.
+\textbf{Neuron-to-Graph} generates explanations for SAE latent activations by identifying n-gram patterns. Precision and recall of these explanations are evaluated on an held-out test.
+\textbf{Ablation sparisity} is an unsupervised characteristic for the downstream effects on output logits when ablating individual latents.
+
+\citet{karvonen2024measuringprogressdictionarylearning} evaluate SAE architectures on board game models, leveraging clear ground truth features which exist in board games. However, their metrics cannot be applied to language models. \citet{makelov2024principledevaluationssparseautoencoders} evaluate SAEs on discovering relevant representations of the indirect-object-identification (IOI) mechanism in GPT-2-small \citet{wang2022interpretabilitywildcircuitindirect}. They leverage knowledge about the IOI circuit to create supervised dictionaries, which they use for comparison with unsupervised dictionaries. However, this requires task specific knowledge to create the supervised dictionaries, limiting its scalability.
+
+Recent work by \citet{venhoff2024sagescalablegroundtruth} introduced SAGE, a framework for automated discovery of task-relevant model components. SAGE computes supervised feature dictionaries that serve as approximate ground truth of model internal features.  The method compares SAEs with supervised dictionaries across layers using a projection-based reconstruction technique.
+
+\clearpage
+\section{Further Evaluation Details}
+\label{app:eval-details}
+
+In all evaluations, we mask off the BOS, EOS, and PAD tokens because some existing SAEs do not train on these special tokens, such as \citet{lieberum2024gemmascopeopensparse}.
+
+\subsection*{PCA Baseline Implementation}
+
+We include a PCA baseline in all charts, implemented as follows: the PCA is fit on 200M model activations, treating all PCA components as SAE latents. The PCA encoder is the PCA transformation matrix, and the decoder is its transpose. The mean activation value is used as a bias term. Due to this implementation, PCA achieves perfect reconstruction but exhibits very high L0 sparsity, approximately equal to the model's hidden dimension.
+
+\subsection*{Core Evaluation Metrics}
+
+Core metrics include L0 sparsity and Loss Recovered as described in Section \ref{sec: core}. Our core implementation also provides additional convenient metrics, such as Relative Reconstruction Bias \citet{rajamanoharan2024improving}, KL divergence, maximum cosine similarity between latents, and the percentage of high-frequency latents.
+
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Parameter}             & \textbf{Value}                  \\ \hline
+        Dataset                        & OpenWebText                     \\ \hline
+        Context length                 & 128 tokens                      \\ \hline
+        Loss Recovered samples         & 3,200 sequences                 \\ \hline
+        Sparsity evaluation samples    & 32,000 sequences                \\ \hline
+    \end{tabular}
+    \caption{Core metrics evaluation hyperparameters.}
+    \label{tab:core-metrics-parameters}
+\end{table}
+
+
+\subsection*{LLM Scoring / Automated Interpretability}
+
+In automated interpretability evaluation, we use \textit{gpt4o-mini} as an LLM judge to quantify the interpretability of SAE latents at scale, in line with Bills et al. Our implementation is similar to the detection score proposed by \citet{paulo2024automaticallyinterpretingmillionsfeatures}. The evaluation consists of two phases: \textbf{generation} and \textbf{scoring}.
+
+In the \textbf{generation phase}, we obtain SAE activation values on \textit{webtext} sequences. We select sequences with the highest activation values (top-$k$) and sample additional sequences with probability proportional to their activation values. These sequences are formatted by highlighting activating tokens with \texttt{<<token>>} syntax and are used to prompt an LLM to generate explanations for each feature based on these formatted sequences.
+
+The \textbf{scoring phase} begins by creating a test set for each latent, which contains top activation sequences, importance-weighted sequences, and random sequences from the remaining distribution, specifically:
+\begin{itemize}
+\item 10 Randomly Sampled Sequences
+\item 2 Max Activating Sequences
+\item 2 Importance Weighted Sequences
+\end{itemize}
+
+Given a feature explanation and the shuffled test set of unlabeled sequences, another LLM judge predicts which sequences would activate the feature. The automatic interpretability score reflects the accuracy of predicted activations.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Parameter}             & \textbf{Value}                  \\ \hline
+        Sample size             & 1,000 non-dead latents          \\ \hline
+        Dataset                        & The Pile                        \\ \hline
+        Activation dataset size        & 2M tokens                       \\ \hline
+        Context length                 & 128 tokens                      \\ \hline
+        LLM judge                      & gpt4o-mini                      \\ \hline
+    \end{tabular}
+    \caption{Automated interpretability evaluation hyperparameters.}
+    \label{tab:autointerp-parameters}
+\end{table}
+
+\subsection*{Sparse Probing}
+
+We evaluate our sparse autoencoders' ability to learn specified concepts through a series of targeted probing tasks across diverse domains, including language identification, profession classification, and sentiment analysis. We base our methodology on that used by \citet{gurnee2023findingneuronshaystackcase}. For each dataset class, we structure the task as a one-versus-all binary classification task. For each task, we encode inputs through the SAE, apply mean pooling over non-padding tokens, and select the top-$K$ latents using maximum mean difference. We chose the maximum mean difference method for feature identification as \citet{gurnee2023findingneuronshaystackcase} found it performs comparably to more complex sparse probing methods while being both efficient and simple. We train a logistic regression probe on the resulting representations and evaluate classification performance on held-out test data. Our evaluation spans 35 distinct binary classification tasks derived from five datasets.
+
+Our probing evaluation encompasses five datasets spanning different domains and tasks:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Dataset} & \textbf{Task Type} & \textbf{Description} \\
+\hline
+\texttt{bias\_in\_bios} & Profession Classification & Predicting professional roles from biographical text \\
+\hline
+\texttt{Amazon Reviews} & Product Classification and Sentiment & Dual tasks: category prediction and sentiment analysis \\
+\hline
+\texttt{Europarl} & Language Identification & Detecting document language \\
+\hline
+\texttt{GitHub} & Programming Language Classification & Identifying coding language from source code \\
+\hline
+\texttt{AG News} & Topic Categorization & Classifying news articles by subject \\
+\hline
+\end{tabular}
+\caption{Datasets used in probing evaluation and their corresponding tasks.}
+\end{table}
+
+To ensure consistent computational requirements across tasks, we sample 4,000 training and 1,000 test examples per binary classification task and truncate all inputs to 128 tokens. For \texttt{GitHub} data, we follow \citet{gurnee2023findingneuronshaystackcase} by excluding the first 150 characters (approximately 50 tokens) as a crude attempt to avoid license headers. We evaluated both mean pooling and max pooling across non-padding tokens and used mean pooling as it obtained slightly higher accuracy. From each dataset, we select subsets containing up to five classes. Multiple subsets may be drawn from the same dataset to maintain positive ratios $\geq 0.2$.
+
+\subsection*{RAVEL}
+
+The RAVEL evaluation assesses the extent to which SAEs achieve clear feature disentanglement, where independent concepts are encoded in distinct latents without unintended overlaps. We follow the methodology introduced by \citet{huang2024ravelevaluatinginterpretabilitymethods}, which specifically tests how targeted latent interventions can alter model predictions about particular attributes of entities (e.g., convincing the model that Paris is in Japan) while preserving other attributes (such as the language spoken in Paris remaining French).
+
+In detail, the evaluation process involves selecting specific entities (e.g., cities, Nobel laureates) and their attributes (e.g., country, language, continent) from the RAVEL dataset. We generate completions for all prompts in the RAVEL dataset describing these entities and select the top 500 entities and 90 templates based on prediction accuracy. To identify the latents relevant to each attribute, we follow \citet{chaudhary2024evaluatingopensourcesparseautoencoders} and use a Multitask Differentiable Binary Mask (MDBM) to select the latents, simultaneously optimizing for both the \textit{Cause} and \textit{Isolation} metrics. Note that this is unlike \citet{huang2024ravelevaluatinginterpretabilitymethods}, who selected latents using a linear probe. The MDBM is trained on 7,000 examples (equally split between cause and isolation) for two epochs with a learning rate of $1 \times 10^{-3}$, and evaluated on a separate set of 3,000 test examples.
+
+During intervention, we transfer encoded latent values at a single token: if an entity spans multiple tokens, the latent intervention is applied specifically to the final token, following \citet{huang2024ravelevaluatinginterpretabilitymethods}. As a performance skyline, we also implement a jointly-trained Multitask Distributed Alignment Search (MDAS) and MDBM, achieving a disentanglement score of 0.87. Due to the increased number of trainable parameters, the MDAS/MDBM intervention was trained for 10 epochs instead of 2, with convergence determined through manual inspection.
+
+In certain evaluations (e.g., SCR, TPP), we typically compute the SAE reconstruction error, perform the latent intervention on the SAE, and then add the original reconstruction error term back to the modified reconstruction. This approach ensures that any changes remain confined to the targeted SAE latents, preventing unintended effects from a potentially large and destabilizing error term. However, for the RAVEL evaluation specifically, we observed that incorporating this error term negatively impacted both the Cause and Disentangle scores, frequently reducing Disentangle by approximately 0.02. Therefore, we omit the error term in our RAVEL evaluations.
+
+For the evaluation, we selected two entity types from the RAVEL dataset: \textit{cities} with attributes \textit{Country}, \textit{Continent}, and \textit{Language}, and \textit{Nobel Prize winners} with attributes \textit{Country of Birth}, \textit{Field}, and \textit{Gender}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\ \hline
+Top entities selected & 500 \\ \hline
+Top templates selected & 90 \\ \hline
+MDBM training samples & 7,000 (50\% cause, 50\% isolation) \\ \hline
+MDBM test samples & 3,000 \\ \hline
+MDBM Start Temperature & 1 \\ \hline
+MDBM End Temperature & $1 \times 10^{-4}$ \\ \hline
+MDBM epochs & 2 \\ \hline
+MDAS epochs & 10 \\ \hline
+MDBM learning rate & $1 \times 10^{-3}$ \\ \hline
+Skyline disentangle score & 0.87 \\ \hline
+\end{tabular}
+\caption{RAVEL evaluation hyperparameters.}
+\label{tab:ravel-parameters}
+\end{table}
+
+\subsection*{Feature Absorption}
+
+In general, feature absorption is incentivized any time there's a pair of concepts, $A$ and $B$, where $A$ implies $B$ (i.e., if $A$ activates, then $B$ will always also be active, but not necessarily the other way around). This will happen with categories or hierarchies, e.g., $\text{India} \implies \text{Asia}$, $\text{pig} \implies \text{mammal}$, $\text{red} \implies \text{color}$, etc. If the SAE learns a latent for $A$ and a latent for $B$, then both will fire on inputs with $A$. But this is redundant—$A$ implies $B$, so there's no need for the $B$ latent to light up on $A$. If the model learns a latent for $A$ and a latent for ``$B$ except $A$,'' then only one activates. This is sparser, but clearly less interpretable!
+
+Feature absorption often happens in an unpredictable manner, resulting in unusual gerrymandered latents. For example, the “starts with $S$” feature may fire on 95\% of tokens beginning with $S$, yet fail to fire on an arbitrary 5\% as the “starts with $S$” feature has been absorbed for this 5\% of tokens. This is an undesirable property that we would like to minimize.
+
+We build on the metric proposed in \citet{chanin2024absorptionstudyingfeaturesplitting}, which focuses on examining how SAE latents represent first-letter classification tasks, measuring cases where the main latents for a letter fail to fully capture the feature while other latents compensate. Our implementation extends this approach with a more flexible measurement technique that enables evaluation across all model layers.  \citet{chanin2024absorptionstudyingfeaturesplitting} included the ablation effect of absorbing latents on the model’s performance on the spelling task as part of the metric, but this limits the use of the metric to early and middle layers. Ablation effect always goes to zero in later layers after the relevant information gets moved to the final token position during the model forward pass, thus diminishing the causal impact of any of the latents at the source token. We therefore adopt an alternate approach to detecting absorbing latents based on the latent contributing a significant portion of the first-letter probe direction to the residual stream, where the first-letter direction is defined by a logistic-regression ground truth probe as described below.
+
+We observed that absorption patterns often involve partial absorption, where the absorbed latent isn’t completely suppressed, but still activates weakly, with other absorbing latent(s) compensating for their reduced activations. We also observed that the responsibility for compensating for the reduced activation of the main latents for a given feature is often shared among several absorbing latents. In some SAEs most cases of absorption involved either or both of these patterns. This motivated the approach described below where we allow a flexible number of latents to be classified as absorbing and measure the amount of absorption as a fraction capturing the proportion of the SAE's representation of the feature which is accounted for by absorbing latents rather than the main latents for that feature.
+
+Our approach works as follows: first, tokens consisting of only English letters and an optional leading space are split into a train and test set, and a supervised logistic regression probe for each starting letter is trained on the train set using residual stream activations from the model. These probes are used as ground truths for the feature directions in the model. Next, for each starting letter, $k$-sparse probing is performed on SAE latents from the train set to find which latents are most relevant for the task. The $k=1$ sparse probing latent is considered as a main SAE latent for a given first letter task. To account for feature splitting, as $k$ is increased from $k=n$ to $k=n+1$, if the F1 score for the $k=n+1$ sparse probe represents an increase of more than $\tau_\text{fs}$ over the F1 of the $k=n$ probe, the $k=n+1$ feature is considered a feature split and is added to the set of main SAE latents performing the first letter task. We use $\tau_\text{fs} = 0.03$ following Chanin et al.
+
+Once the main feature split latents for each first letter have been identified, we evaluate their behavior on the test set for cases of absorption based on the projections of the residual stream activations and the SAE latent activations onto the ground truth probe direction for the first letter in question. Specifically, we detect absorption to occur on test set inputs where:
+\begin{enumerate}
+    \item The ground truth probe correctly classifies the first letter of the token in question (if the ground truth probe cannot detect the feature, it would be unfair to expect the main feature split latents to do so).
+    \item The sum of the projections of the main feature split latent activations onto the probe direction is less than the projection of the residual stream activation onto the probe direction (conceptually, the main feature split latents don't account for all of the presence of the feature they are trying to detect in the residual stream activation):\[\sum_{i \in S_\text{main}} a_i \mathbf{d}_i \cdot \mathbf{p} < \mathbf{a}_\text{model} \cdot \mathbf{p}\]
+    \item The sum of the top $A_{\max}$ ground truth probe projections from other latents accounts for at least a proportion $\tau_{\text{pa}}$ of the projection of the residual stream activation onto the probe direction. Note we only consider other latents as potential absorbing latents if they have cosine similarity with the ground truth probe $\geq \tau_{\text{ps}}$ and positive ground truth probe projection. (conceptually, there are other related latents which significantly compensate for the reduced activation of the main latents): \[\frac{\sum_{i \in S_\text{abs}} a_i \mathbf{d}_i \cdot \mathbf{p}}{\mathbf{a}_\text{model} \cdot \mathbf{p}} \ge \tau_{\text{pa}}\]
+\end{enumerate}
+
+For inputs that satisfy the above criteria, the absorption score is defined as:
+\[
+\text{Absorption Score} = \frac{\sum_{i \in S_\text{abs}} a_i \mathbf{d}_i \cdot \mathbf{p}}{\sum_{i \in S_\text{abs}} a_i \mathbf{d}_i \cdot \mathbf{p} + \sum_{i \in S_\text{main}} a_i \mathbf{d}_i \cdot \mathbf{p}}
+\]
+
+Where:
+\begin{itemize}
+    \item $S$ is the set of all SAE latents.
+    \item $S_\text{main}$ is the set of the main feature split latents.
+    \item $S_\text{abs}$ is the set of the absorbing latents. Contains up to the top $A_{\max}$ potential absorbing latents with the highest ground truth probe projections.
+    \item $a_i$ is the activation magnitude of latent $i$.
+    \item $\mathbf{d}_i$ is the unit decoder direction for latent $i$.
+    \item $\mathbf{p}$ is the unit ground truth probe direction.
+    \item $\mathbf{a}_\text{model}$ is the activation vector from the model, in our case the residual stream activation.
+\end{itemize}
+
+Conceptually, this captures the proportion of the SAE's representation of the feature which is accounted for by absorbing latents rather than the main latents for that feature
+
+For all other inputs, the absorption score is 0. The total absorption score is then the mean absorption score across all test inputs correctly classified by the probe. The dataset is the model vocabulary, filtered for tokens containing only English letters and an optional leading space.
+
+For consistency with our other evaluation metrics where higher values are more desirable, we present our results using the complement of the absorption score (1 - absorption score).
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Parameter}             & \textbf{Value}                  \\ \hline
+        Train/test split               & 80/20                           \\ \hline
+        $k$-sparse probing max $k$     & 10                           \\ \hline
+        $\tau_\text{fs}$               & $0.03$                           \\ \hline
+        $\tau_{\text{pa}}$             & 0                           \\ \hline
+        $\tau_{\text{ps}}$             & $-1$                           \\ \hline
+        $A_{\max}$                     & SAE dictionary size                           \\ \hline
+    \end{tabular}
+    \caption{Absorption evaluation hyperparameters.}
+    \label{tab:absorption-parameters}
+\end{table}
+
+
+\subsection*{Unlearning}
+
+We evaluate SAEs on their ability to selectively remove knowledge while maintaining model performance on unrelated tasks, following the methodology in \citet{farrell2024applyingsparseautoencodersunlearn}. While there are several existing unlearning datasets, we found that Gemma-2-2B's performance was relatively poor on most test sets. With larger models, this evaluation could be expanded to leverage a greater diversity of existing unlearning datasets. Evaluation parameters are detailed in Table \ref{tab:unlearning-parameters}.
+
+This SAE unlearning evaluation uses the WMDP-bio dataset, which contains multiple-choice questions involving dangerous biology knowledge. The intervention methodology involves clamping selected SAE feature activations to negative values whenever the latents activate during inference. Feature selection utilizes a dual-dataset approach: calculating feature sparsity across a "forget" dataset (WMDP-bio corpus) and a "retain" dataset (WikiText). The selection and intervention process involves three key hyperparameters:
+\begin{enumerate}
+    \item \texttt{retain\_threshold} - maximum allowable sparsity on the retain set,
+    \item \texttt{n\_features} - number of top latents to select, and
+    \item \texttt{multiplier} - magnitude of negative clamping.
+\end{enumerate}
+The procedure first discards latents with retain set sparsity above \texttt{retain\_threshold}, then selects the top \texttt{n\_features} by forget set sparsity, and finally clamps their activations to negative \texttt{multiplier} when activated.
+
+We quantify unlearning effectiveness through two metrics:
+\begin{enumerate}
+    \item Accuracy on WMDP-bio questions, and
+    \item Accuracy on biology-unrelated MMLU subsets, including high school US history, geography, college computer science, and human aging.
+\end{enumerate}
+Both metrics only evaluate on questions that the base model answers correctly across all option permutations, to reduce noise from uncertain model knowledge. Lower WMDP-bio accuracy indicates successful unlearning, while higher MMLU accuracy demonstrates preserved general capabilities. 
+
+We sweep the three hyperparameters to obtain multiple evaluation results per SAE. To derive a single evaluation metric, we filter for results maintaining MMLU accuracy above 0.99 and select the minimum achieved WMDP-bio accuracy, thereby measuring optimal unlearning performance within acceptable side effect constraints.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Parameter}             & \textbf{Value}                  \\ \hline
+        MMLU Subsets                & High School US history, \newline 
+                                         College Computer Science, \newline
+                                         High School Geography, \newline
+                                         Human Aging                      \\ \hline
+        Retain thresholds              & [0.001, 0.01]                   \\ \hline
+        Number of latents             & [10, 20]                        \\ \hline
+        Negative multipliers           & [25, 50, 100, 200]              \\ \hline
+        Retain / Forget Dataset size   & 1,024 sequences                 \\ \hline
+        Retain / Forget Sequence length                & 1,024 tokens                    \\ \hline
+    \end{tabular}
+    \caption{Unlearning evaluation hyperparameters.}
+    \label{tab:unlearning-parameters}
+\end{table}
+
+
+\subsection*{Spurious Correlation Removal (SCR)}
+
+In the SHIFT method, a human evaluator debiases a classifier by ablating SAE latents. We automate SHIFT and use it to measure whether an SAE has found separate latents for distinct concepts—for example, the concept of gender and the concepts related to someone's profession. Distinct latents enable a more precise removal of spurious correlations, thereby effectively debiasing the classifier.
+
+First, we filter datasets (\textit{Bias in Bios} and \textit{Amazon Reviews}) for two binary labels. For example, we select text samples of two professions (\textit{professor}, \textit{nurse}) and the gender labels (\textit{male}, \textit{female}) from the \textit{Bias in Bios} dataset. We partition this dataset into:
+\begin{itemize}
+    \item A \textbf{balanced set}—containing all combinations of \textit{professor}/\textit{nurse} and \textit{male}/\textit{female}, and
+    \item A \textbf{biased set}—containing only \textit{male+professor} and \textit{female+nurse} combinations.
+\end{itemize}
+We then train a linear classifier $C_b$ on the biased dataset. The linear classifier picks up on both signals, such as gender and profession. During the evaluation, we attempt to debias the classifier $C_b$ by selecting SAE latents related to one class (e.g., gender) to increase classification accuracy for the other class (e.g., profession).
+
+We select the set $L$ containing the top $n$ SAE latents according to their absolute probe attribution score with a probe trained specifically to predict the spurious signal (e.g., gender). We found that latents automatically identified through probe attribution are interpretable and align well with the target concepts, as validated by both human evaluation and automated LLM judgment. Thus, we select latents using probe attribution to avoid the cost and potential biases associated with an LLM judge.
+
+For each original and spurious-feature-informed set $L$ of selected latents, we remove the spurious signal by defining a modified classifier:
+\[
+C_m = C_b \setminus L
+\]
+where all selected unrelated yet highly attributive latents are zero-ablated. The accuracy with which the modified classifier $C_m$ predicts the desired class when evaluated on the balanced dataset indicates SAE quality. A higher accuracy suggests that the SAE was more effective in isolating and removing the spurious correlation (e.g., gender), allowing the classifier to focus on the intended task (e.g., profession classification).
+
+We consider a normalized evaluation score:
+\[
+S_\text{SHIFT} = \frac{A_\text{abl} - A_\text{base}}{A_\text{oracle} - A_\text{base}}
+\]
+where:
+\begin{itemize}
+    \item $A_\text{abl}$ is the probe accuracy after ablation,
+    \item $A_\text{base}$ is the baseline accuracy (spurious probe before ablation), and
+    \item $A_\text{oracle}$ is the skyline accuracy (probe trained directly on the desired concept).
+\end{itemize}
+This score represents the proportion of improvement achieved through ablation relative to the maximum possible improvement, allowing fair comparison across different classes and models.
+
+\subsection*{Targeted Probe Perturbation (TPP)}
+
+SHIFT requires datasets with correlated labels. We generalize SHIFT to all multiclass NLP datasets by introducing the \textit{Targeted Probe Perturbation (TPP)} metric. At a high level, we aim to find sets of SAE latents that disentangle the dataset classes. Inspired by SHIFT, we train probes on the model activations and measure the effect of ablating sets of latents on the probe accuracy. Ablating a disentangled set of latents should only have an isolated causal effect on one class probe, while leaving other class probes unaffected. A full write-up is located in \textit{“Evaluating Sparse Autoencoders on Targeted Concept Erasure Tasks”}.
+
+We consider a dataset mapping text to exactly one of $m$ concepts $c \in C$. For each class with index $i = 1, \dots, m$, we select the set $L_i$ of the most relevant SAE latents by training a linear probe. Note that we select the top signed importance scores, as we are only interested in latents that actively contribute to the targeted class.
+
+For each concept $c_i$, we partition the dataset into samples of the targeted concept and a random mix of all other labels.
+
+We define the model with a probe corresponding to concept $c_j$ for $j = 1, \dots, m$ as a linear classifier $C_j$, which is able to classify concept $c_j$ with accuracy $A_j$. Further, $C_{i,j}$ denotes a classifier for $c_j$ where latents $L_i$ are ablated. Then, we iteratively evaluate the accuracy $A_{i,j}$ of all linear classifiers $C_{i,j}$ on the dataset partitioned for the corresponding class $c_j$.
+
+The \textit{Targeted Probe Perturbation (TPP)} score is defined as:
+\[
+S_\text{TPP} = \text{mean}_{i=j} \left( A_{i,j} - A_j \right) - \text{mean}_{i \neq j} \left( A_{i,j} - A_j \right)
+\]
+
+This score represents the effectiveness of causally isolating a single probe. Ablating a disentangled set of latents should only show a significant accuracy decrease if $i = j$, namely if the latents selected for class $i$ are ablated in the classifier of the same class $i$, and remain constant if $i \neq j$.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Parameter}             & \textbf{Value}                  \\ \hline
+        Train set size                 & 4,000 sequences                 \\ \hline
+        Test set size                  & 1,000 sequences                 \\ \hline
+        Context length                 & 128 tokens                      \\ \hline
+        Probe train batch size         & 16                              \\ \hline
+        Probe epochs                   & 20                              \\ \hline
+        Probe learning rate            & 1e-3                             \\ \hline
+        Probe L1 penalty               & 1e-3                             \\ \hline
+    \end{tabular}
+    \caption{SCR and TPP shared evaluation hyperparameters.}
+    \label{tab:scr-tpp-shared-parameters}
+\end{table}
+
+For SCR evaluation, we create perfectly biased datasets where the spurious correlation is gender for Bias in Bios and sentiment for Amazon Reviews.
+
+\textbf{SCR Class Pairs:}
+\begin{itemize}
+\item \textit{Bias in Bios:}
+\begin{itemize}
+\item Professor / Nurse
+\item Architect / Journalist
+\item Surgeon / Psychologist
+\item Attorney / Teacher
+\end{itemize}
+\item \textit{Amazon Reviews:}
+\begin{itemize}
+\item Books / CDs and Vinyl
+\item Software / Electronics
+\item Pet Supplies / Office Products
+\item Industrial and Scientific / Toys and Games
+\end{itemize}
+\end{itemize}
+
+\textbf{TPP Classes:}
+\begin{itemize}
+\item \textit{Bias in Bios:}
+\begin{itemize}
+\item Accountant
+\item Architect
+\item Attorney
+\item Dentist
+\item Filmmaker
+\end{itemize}
+\item \textit{Amazon Reviews:}
+\begin{itemize}
+\item Toys and Games
+\item Cell Phones and Accessories
+\item Industrial and Scientific
+\item Musical Instruments
+\item Electronics
+\end{itemize}
+\end{itemize}
+
+\clearpage
+\section{Baseline Comparison: SAEs on Randomly Initialized vs. Fully Trained Models}
+
+We additionally investigated sparse autoencoders (SAEs) trained on a randomly initialized language model as a baseline, inspired by recent work involving auto-interp \citep{heap2025sparseautoencodersinterpretrandomly}. Specifically, we trained two sets of 16k-width TopK SAEs on layer 10 of the Pythia-1B model for 100 million tokens each: one set trained on the fully trained model and another on the randomly initialized (Step 0) model. We compared these two sets using several SAEBench metrics, specifically focusing on KL divergence score, sparse probing, automated interpretability (auto-interp), Spurious Correlation Removal (SCR), and Targeted Probe Perturbation (TPP).
+
+\paragraph{Limitations and Contextual Considerations:} When interpreting these results, several limitations should be acknowledged. The SAEBench metrics employed in this analysis were originally designed for evaluating various SAEs trained on the same underlying model, rather than comparing SAEs across fundamentally different models, such as fully trained versus randomly initialized. Consequently, metrics dependent on the inherent capabilities of a trained model—such as \textbf{unlearning}, which requires the model to perform above random chance on benchmarks like MMLU, or \textbf{feature absorption}, which relies on accurately predicting specific token-level features—are not applicable to randomly initialized models.
+
+Additionally, comparability challenges arise due to inherent differences in predictive behaviors between models. For example, \textbf{Targeted Probe Perturbation (TPP)} and \textbf{SCR} measure relative changes in linear probe accuracy within a given model. However, linear probes trained on randomly initialized models typically yield substantially lower baseline accuracies compared to fully trained models, making cross-model comparisons potentially misleading. For \textbf{sparse probing}, probing the residual stream of the trained model gives 94\% accuracy vs 84\% with the random model.
+
+We observed several noteworthy patterns:
+
+\paragraph{Supervised Metrics:} SAEs trained on the fully trained model significantly outperformed those trained on the randomly initialized model on most metrics, especially on sparse probing and SCR. The SAEs trained on the random model exhibited performance close to or worse than directly probing residual stream values, indicating their inability to capture meaningful abstract features.
+
+\paragraph{Automated Interpretability:} SAEs trained on the fully trained model achieved slightly higher auto-interp scores compared to those trained on the random model. However, both sets of SAEs substantially outperformed a baseline involving directly reading residual stream activations, a notably weak baseline. We note that our auto-interp evaluation employs a detection-based approach, distinct from the fuzzing method utilized by \citet{heap2025sparseautoencodersinterpretrandomly}, which may partly explain differences in results.
+
+As shown in Figure \ref{fig:autointerp_by_location}, SAEs consistently and significantly outperformed all other baselines we tested, including MLP neurons, PCA principal components, and direct residual stream readings.
+
+\paragraph{KL Divergence:} Since cross-entropy loss recovery metrics are not meaningful for randomly initialized models, we instead evaluated a normalized KL divergence score defined as follows:
+
+\[
+\text{KL Divergence Score} = \frac{D_{KL}(P_{\text{ablated}} \parallel P_{\text{orig}}) - D_{KL}(P_{\text{SAE}} \parallel P_{\text{orig}})}{D_{KL}(P_{\text{ablated}} \parallel P_{\text{orig}})}
+\]
+
+where \(P_{\text{orig}}\) represents logits from the original model, \(P_{\text{ablated}}\) represents logits after zero-ablation of activations, and \(P_{\text{SAE}}\) represents logits after reconstructing activations with the SAE. SAEs trained on the fully trained model achieved significantly higher KL divergence scores (indicating superior reconstruction quality), despite having higher absolute KL divergence values. This outcome is expected because randomly initialized models produce essentially random predictions, offering limited opportunity for meaningful reconstruction improvement.
+
+\paragraph{Targeted Probe Perturbation (TPP):} SAEs trained on randomly initialized models achieved higher TPP scores than those trained on the fully trained Pythia-1B model. However, we caution against interpreting this result as indicative of poor evaluation quality. The TPP metric measures relative changes in probe accuracy within a given model, not across distinct models. Given that the linear probes on the randomly initialized model start from a substantially lower baseline accuracy, direct comparisons of TPP across models may be misleading.
+
+
+\begin{figure*}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]
+{images/Pythia-1b-random.png}
+\caption{Evaluation results for SAEs trained on the randomly initialized and final versions of Pythia-1B.}
+\label{fig:random_model_evals}
+\end{figure*}
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{images/Autointerp_by_location.png}
+\caption{Auto-interp scores for the canonical GemmaScope SAEs when compared to MLP neuron, PCA, and residual stream baselines. SAEs are significantly more interpretable than the baselines.}
+\label{fig:autointerp_by_location}
+\end{figure}
+
+
+
+\clearpage
+\section{Additional Dictionary Scaling Analysis}
+\label{app:scaling-analysis}
+
+Figure \ref{fig:scaling_width_single_trainer_2x3} in the main text aggregates scaling results over L0 values 40-200 to highlight overall trends. Figure \ref{fig:2x3_width_diff_scalingplot} decomposes the scaling behavior from 16k to 65k width across all sparsities, at the cost of obscuring direct architectural comparisons.
+
+\begin{figure*}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]
+{images/plot_diff_sae_bench_gemma-2-2b_width_diff_series_layer_12.png}
+\caption{Detailed scaling analysis showing the change in metric scores when increasing SAE width from 16k to 65k on Gemma-2-2B. Unlike the averaged results in Figure \ref{fig:scaling_width_single_trainer_2x3}, this shows how scaling effects vary across different sparsity levels (L0 values).}
+\label{fig:2x3_width_diff_scalingplot}
+\end{figure*}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\columnwidth]{images/scr_intervention_budget_sweep_scaling_diff.png}
+\caption{Change in SCR score when scaling from 16k to 65k width, evaluated across intervention budgets k=[5, 10, 20, 50, 100, 500]. ReLU and Matryoshka show improved performance with scale, despite having dramatically different absolute scores (ReLU being lowest and Matryoshka highest in Figure \ref{fig:2x3_65k_plot}).}
+\label{fig:scr_intervention_budget_sweep_scaling_diff}
+\end{figure}
+
+\clearpage
+\section{Training Dynamics}
+\label{app:training_dynamics}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/all_checkpoints.png}
+    \caption{Scores for all 7 metrics on our 16K Gemma-2-2B TopK and ReLU SAEs as we evaluate checkpoints throughout training.}
+\end{figure}
+\label{fig:plot_all_checkpoints}
+
+\clearpage
+\section{Intervention Set Size Analysis}
+\label{app:intervention_set_size}
+Several of our metrics involve a hyperparameter K that determines how many latents we analyze or intervene upon:
+
+SCR and TPP use K latents for zero ablation, evaluated at K = [5, 10, 20, 50, 100, 500]
+Sparse probing selects K latents to probe, evaluated at K = [1, 2, 5]
+
+For SCR and TPP, selecting K involves a trade-off: we want enough latents to capture complete concepts, but few enough to enable meaningful human analysis. We chose K = 20 for our main results as a practical size for manual inspection. Our analysis shows that relative performance differences between architectures remain consistent for K from 5 to 50, though these patterns break down at K = 500 (which exceeds reasonable limits for human analysis).
+For sparse probing, we follow \citet{gao2024scaling} in presenting K = 1 results in the main text. However, our extended analysis reveals that SAEs' advantage over the PCA baseline grows substantially as K increases from 1 to 5, suggesting that SAEs may be particularly effective at capturing concepts that require multiple latents.
+All results shown below use the 65k width Gemma-2-2B SAE suite:
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{images/scr_tpp_sparse_probing_ks/plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12_scr.png}
+\caption{Impact of intervention set size K on SCR scores across different architectures. Results show how changing the number of ablated latents affects the ability to remove spurious correlations.}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{images/scr_tpp_sparse_probing_ks/plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12_tpp.png}
+\caption{TPP scores across different intervention set sizes K, showing how the number of ablated latents affects concept isolation.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\columnwidth]{images/scr_tpp_sparse_probing_ks/plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12_sparse_probing.png}
+\caption{Sparse probing performance with different numbers of probed latents K, demonstrating improved concept detection with additional latents.}
+\end{figure}
+
+\clearpage
+\section{Gemma-Scope Evaluation Results}
+\label{app:gemma_scope_eval_results}
+We evaluate the Gemma-Scope SAE series introduced by \citet{lieberum2024gemmascopeopensparse}, which provides a unique opportunity to study SAE behavior at large scales. While Gemma-Scope includes SAEs trained on all layers, we focus on their "Width Series" - a subset of layers where SAEs were trained with dictionary sizes ranging from 16k to 1M latents:
+
+\begin{itemize}
+\item Gemma-2-2B: Width series trained on layers [5, 12, 19]
+\item Gemma-2-9B: Width series trained on layers [9, 20, 31]
+\end{itemize}
+
+Our evaluation reveals substantial variation in SAE performance across different layers of the same model. This layer-dependent behavior is particularly pronounced in the unlearning metric, where SAEs trained on the final evaluated layer (layer 19 for Gemma-2-2B and layer 31 for Gemma-2-9B) consistently achieve scores near zero, regardless of width. This is consistent with the findings of \citet{farrell2024applyingsparseautoencodersunlearn}.
+
+We see several key scaling trends that hold across both model sizes:
+\begin{enumerate}
+\item Loss Recovered and AutoInterp improves consistently with increased width
+\item Feature Absorption, SCR, and TPP scores degrade at larger widths
+\item Unlearning effectiveness if best at earlier layers and varies significantly by layer
+\item Sparse Probing scores increase at later layers
+\end{enumerate}
+
+These scaling patterns largely align with our findings from the main architecture comparison, suggesting that the trade-offs we identified between reconstruction fidelity and feature disentanglement persist even at larger scales.
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{images/gemma-scope/plot_2x4_gemma-scope_gemma-2-2b_width_series_layer_5.png}
+\caption{Performance of Gemma-Scope SAEs trained on layer 5 of Gemma-2-2B across four different widths (16k to 1M latents). Results show all seven benchmark metrics: Core metrics (Loss Recovered), Concept Detection (Sparse Probing, Feature Absorption), Interpretability (LLM automated interpretability), and Feature Disentanglement (Unlearning, SCR, TPP). The x-axis shows L0 sparsity values, while the y-axis represents metric scores. Each line color represents a different SAE width, revealing how performance scales with dictionary size at fixed sparsity levels.}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/gemma-scope/plot_2x4_gemma-scope_gemma-2-2b_width_series_layer_12.png}
+    \caption{Evaluation of Gemma-Scope SAEs (16k to 1M latents) on Gemma-2-2B layer 12.}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/gemma-scope/plot_2x4_gemma-scope_gemma-2-2b_width_series_layer_19.png}
+    \caption{Evaluation of Gemma-Scope SAEs (16k to 1M latents) on Gemma-2-2B layer 19.}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/gemma-scope/plot_2x4_gemma-scope_gemma-2-9b_width_series_layer_9.png}
+    \caption{Evaluation of Gemma-Scope SAEs (16k to 1M latents) on Gemma-2-9B layer 20.}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/gemma-scope/plot_2x4_gemma-scope_gemma-2-9b_width_series_layer_20.png}
+    \caption{Evaluation of Gemma-Scope SAEs (16k to 1M latents) on Gemma-2-9B layer 20.}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/gemma-scope/plot_2x4_gemma-scope_gemma-2-9b_width_series_layer_31.png}
+    \caption{Evaluation of Gemma-Scope SAEs (16k to 1M latents) on Gemma-2-9B layer 31.}
+\end{figure}
+
+\clearpage
+\section{Further SAE Bench Evaluation Results}
+\label{app:sae_bench_eval_results}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/plot_2x4_sae_bench_gemma-2-2b_4k_architecture_series_layer_12.png}
+    \caption{Scores for all 7 metrics on our 4K Gemma-2-2B suite.}
+\end{figure}
+\label{fig:plot_2x4_sae_bench_gemma-2-2b_4k_architecture_series_layer_12}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/plot_2x4_sae_bench_gemma-2-2b_16k_architecture_series_layer_12.png}
+    \caption{Scores for all SAEBench metrics on our 16K Gemma-2-2B suite.}
+\end{figure}
+\label{fig:plot_2x4_sae_bench_gemma-2-2b_16k_architecture_series_layer_12}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12.png}
+    \caption{Scores for all SAEBench metrics on our 65K Gemma-2-2B suite.}
+\end{figure}
+\label{fig:plot_2x4_sae_bench_gemma-2-2b_65k_architecture_series_layer_12}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/plot_2x4_sae_bench_pythia-160m_4k_architecture_series_layer_8.png}
+    \caption{Scores for all 7 metrics on our 4K Pythia-160M suite.}
+\end{figure}
+\label{fig:plot_2x4_sae_bench_pythia-160m_4k_architecture_series_layer_8}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/plot_2x4_sae_bench_pythia-160m_16k_architecture_series_layer_8.png}
+    \caption{Scores for all 7 metrics on our 16K Pythia-160M suite.}
+\end{figure}
+\label{fig:plot_2x4_sae_bench_pythia-160m_16k_architecture_series_layer_8}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\columnwidth]{images/plot_2x4_sae_bench_pythia-160m_65k_architecture_series_layer_8.png}
+    \caption{Scores for all SAEBench metrics on our 65K Pythia-160M suite.}
+\end{figure}
+\label{fig:plot_2x4_sae_bench_pythia-160m_65k_architecture_series_layer_8}
+
+\end{document}
+
+You can have as much text here as you want. The main body must be at most $8$ pages long.
+For the final version, one more page can be added.
+If you want, you can use an appendix like this one.  
+
+The $\mathtt{\backslash onecolumn}$ command above can be kept in place if you prefer a one-column appendix, or can be removed if you prefer a two-column appendix.  Apart from this possible change, the style (font size, spacing, margins, page numbering, etc.) should be kept the same as the main body.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+% This document was modified from the file originally made available by
+% Pat Langley and Andrea Danyluk for ICML-2K. This version was created
+% by Iain Murray in 2018, and modified by Alexandre Bouchard in
+% 2019 and 2021 and by Csaba Szepesvari, Gang Niu and Sivan Sabato in 2022.
+% Modified again in 2023 and 2024 by Sivan Sabato and Jonathan Scarlett.
+% Previous contributors include Dan Roy, Lise Getoor and Tobias
+% Scheffer, which was slightly modified from the 2010 version by
+% Thorsten Joachims & Johannes Fuernkranz, slightly modified from the
+% 2009 version by Kiri Wagstaff and Sam Roweis's 2008 version, which is
+% slightly modified from Prasad Tadepalli's 2007 version which is a
+% lightly changed version of the previous year's version by Andrew
+% Moore, which was in turn edited from those of Kristian Kersting and
+% Codrina Lauth. Alex Smola contributed to the algorithmic style files.
