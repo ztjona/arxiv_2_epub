@@ -46,6 +46,7 @@ from docopt import docopt
 import requests
 import os
 import subprocess
+import signal
 
 
 # ####################################################################
@@ -133,47 +134,6 @@ def unzip_latex_file(file_path, output_dir="unzipped"):
         raise Exception(f"Error unzipping file: {file_path}")
 
 
-# def compile_latex_to_epub(latex_dir, output_file="output.epub"):
-#     """
-#     Compiles LaTeX files into an EPUB format using pandoc.
-
-#     Args:
-#         latex_dir (str): Directory containing the LaTeX files.
-#         output_file (str): Path to the output EPUB file.
-
-#     Returns:
-#         str: Path to the generated EPUB file.
-#     """
-#     logging.info(f"Compiling LaTeX files in {latex_dir} to EPUB: {output_file}...")
-
-#     try:
-#         # Find the main .tex file (assumes a single .tex file in the directory)
-#         tex_files = [f for f in os.listdir(latex_dir) if f.endswith(".tex")]
-#         if not tex_files:
-#             raise Exception("No .tex file found in the directory.")
-#         main_tex_file = os.path.join(latex_dir, tex_files[0])
-
-#         # Run pandoc to convert the .tex file to .epub
-#         subprocess.run(
-#             [
-#                 "pandoc",
-#                 main_tex_file,
-#                 "-o",
-#                 output_file,
-#                 "--mathjax",  # Use MathJax for rendering math
-#                 "--resource-path",
-#                 latex_dir,  # Set resource path to the LaTeX directory
-#                 "--fail-if-warnings",  # Fail if there are warnings
-#             ],
-#             check=True,
-#             shell=True,
-#         )
-#         logging.info(f"EPUB file generated at: {output_file}")
-#         return output_file
-#     except subprocess.CalledProcessError as e:
-#         logging.error(f"Failed to compile LaTeX to EPUB: {e}")
-#         raise Exception(f"Error compiling LaTeX to EPUB: {latex_dir}")
-
 
 def run_latexml(latex_file: str, output_file: str = "out/main.xml") -> None:
     """
@@ -188,7 +148,7 @@ def run_latexml(latex_file: str, output_file: str = "out/main.xml") -> None:
     """
     logging.info(f"Running latexml on file: {latex_file}, output: {output_file}")
     try:
-        command = ["latexml", f"--dest={output_file}", latex_file,"--verbose"]
+        command = ["latexml", f"--dest={output_file}", latex_file,"--verbose", "--includestyles", "--nocomments"]
         result = subprocess.run(command, check=True)
         logging.info(f"latexml command executed successfully: {result.stdout}")
     except subprocess.CalledProcessError as e:
@@ -209,7 +169,7 @@ def run_latexmlpost(xml_file: str = "out/main.xml", output_file: str = "out/main
     """
     logging.info(f"Running latexmlpost on file: {xml_file}, output: {output_file}")
     try:
-        command = ["latexmlpost", f"--dest={output_file}", xml_file]
+        command = ["latexmlpost", f"--dest={output_file}", xml_file, "-navigationtoc=context"] #, "--split",  "-mathsvg","-navigationtoc=context"
         result = subprocess.run(command, check=True)
         logging.info(f"latexmlpost command executed successfully: {result.stdout}")
     except subprocess.CalledProcessError as e:
@@ -234,7 +194,9 @@ def convert_html_to_epub(epub_file: str, html_file: str = "out/main.html") -> No
             epub_file,
             "--language",
             "en",
-            "--no-default-epub-cover",
+            "--no-default-epub-cover", 
+            #"--output-profile=kobo",
+            "--epub-toc-at-end"
         ]
         result = subprocess.run(command, check=True)
         logging.info(f"ebook-convert command executed successfully: {result.stdout}")
@@ -276,14 +238,26 @@ def ensure_latex_element_exists(tex_files: list, element: str) -> str:
     """
     logging.info(f"Ensuring LaTeX element '{element}' exists in the provided .tex files.")
     if element in tex_files:
-        logging.info(f"Found LaTeX element '{element}' in file '{tex_files[element]}'.")
+        logging.info(f"Found LaTeX element '{element}' in file '{tex_files}'.")
         return element
     else:
         print("LaTeX element not found in any file.")
         print("Available .tex files:")
         for i, file in enumerate(tex_files):
             print(f"{i}: {file}")
-        selected_index = int(input("Select a file by index: "))
+        def timeout_handler(signum, frame):
+            raise TimeoutError("User input timed out.")
+
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(20)  # Set timeout to 20 seconds
+
+        try:
+            selected_index = int(input("Select a file by index: "))
+        except TimeoutError:
+            logging.warning("User input timed out. Returning the first file by default.")
+            selected_index = 0
+        finally:
+            signal.alarm(0)  # Disable the alarm
         if selected_index < 0 or selected_index >= len(tex_files):
             raise ValueError("Invalid index selected.")
         logging.info(f"Selected LaTeX file: {tex_files[selected_index]}")
@@ -314,7 +288,7 @@ def main(args):
     logging.info("Starting main process with arguments:")
     logging.info(args)
     arxiv_url = args["<arxiv_url>"]
-    latex_file = args["--latex_file"]
+    latex_file_name = args["--latex_file"]
     output_file = args["--output"]
     clear_temp_files = args["--clear"]
 
@@ -323,7 +297,7 @@ def main(args):
     logging.info(f"Extracted directory: {extracted_dir}")
 
     latex_found = list_tex_files(extracted_dir)
-    latex_file_name = ensure_latex_element_exists(latex_found, latex_file)
+    latex_file_name = ensure_latex_element_exists(latex_found, latex_file_name)
 
     latex_full_file = os.path.join(extracted_dir, latex_file_name)
     title = get_title(latex_full_file)
